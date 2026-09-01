@@ -7,30 +7,187 @@ namespace TrabalhoM1.Grafos
     {
         private static int Main(string[] args)
         {
-            if (args.Length > 0 && args[0] == "--test")
+            if (args.Length > 0)
             {
-                return ExecutarTestes();
+                if (args[0] == "--test")
+                {
+                    return ExecutarTestes();
+                }
+                else if (args[0] == "--teste-parte2" || args[0] == "--teste-completo")
+                {
+                    TesteParte2.ExecutarTodosTestes();
+                    return 0;
+                }
             }
 
-            Console.WriteLine("MATRIZ - grafo não direcionado e ponderado");
-            Grafos matriz = CriarExemplo(new GrafoMatriz(false, true));
-            matriz.imprimeGrafo();
-
-            Console.WriteLine();
-            Console.WriteLine("LISTA - mesmo grafo");
-            Grafos lista = CriarExemplo(new GrafoLista(false, true));
-            lista.imprimeGrafo();
+            DemonstraracaoBuscas();
+            
             return 0;
         }
 
-        private static Grafos CriarExemplo(Grafos grafo)
+        private static void DemonstraracaoBuscas()
         {
-            grafo.inserirVertice("A");
-            grafo.inserirVertice("B");
-            grafo.inserirVertice("C");
-            grafo.inserirAresta(0, 1, 2.5f);
-            grafo.inserirAresta(1, 2, 4f);
-            return grafo;
+            Console.WriteLine("=== DEMONSTRAÇÃO DE BUSCAS E DIJKSTRA ===\n");
+
+            // Teste 1: Busca em Largura e Profundidade
+            Console.WriteLine("--- Teste 1: Grafo Não-Direcionado (BFS e DFS) ---");
+            Grafos grafo1Matriz = new GrafoMatriz(false, false);
+            Grafos grafo1Lista = new GrafoLista(false, false);
+
+            for (int i = 0; i < 5; i++)
+            {
+                grafo1Matriz.inserirVertice(i.ToString());
+                grafo1Lista.inserirVertice(i.ToString());
+            }
+
+            int[][] arestas1 = new int[][] 
+            {
+                new int[] { 0, 1 },
+                new int[] { 0, 2 },
+                new int[] { 1, 2 },
+                new int[] { 1, 3 },
+                new int[] { 2, 3 },
+                new int[] { 3, 4 }
+            };
+
+            foreach (var aresta in arestas1)
+            {
+                grafo1Matriz.inserirAresta(aresta[0], aresta[1]);
+                grafo1Lista.inserirAresta(aresta[0], aresta[1]);
+            }
+
+            Console.WriteLine("MATRIZ:");
+            Console.WriteLine("BFS começando de 0: " + string.Join(", ", grafo1Matriz.buscaLargura(0)));
+            Console.WriteLine("DFS começando de 0: " + string.Join(", ", grafo1Matriz.buscaProfundidade(0)));
+
+            Console.WriteLine("\nLISTA:");
+            Console.WriteLine("BFS começando de 0: " + string.Join(", ", grafo1Lista.buscaLargura(0)));
+            Console.WriteLine("DFS começando de 0: " + string.Join(", ", grafo1Lista.buscaProfundidade(0)));
+
+            // Teste 2: Grafo Direcionado
+            Console.WriteLine("\n--- Teste 2: Grafo Direcionado (BFS e DFS) ---");
+            Grafos grafo2Matriz = new GrafoMatriz(true, false);
+            Grafos grafo2Lista = new GrafoLista(true, false);
+
+            for (int i = 0; i < 5; i++)
+            {
+                grafo2Matriz.inserirVertice(i.ToString());
+                grafo2Lista.inserirVertice(i.ToString());
+            }
+
+            int[][] arestas2 = new int[][]
+            {
+                new int[] { 0, 1 },
+                new int[] { 0, 2 },
+                new int[] { 1, 2 },
+                new int[] { 1, 3 },
+                new int[] { 2, 3 },
+                new int[] { 3, 4 },
+                new int[] { 2, 4 }
+            };
+
+            foreach (var aresta in arestas2)
+            {
+                grafo2Matriz.inserirAresta(aresta[0], aresta[1]);
+                grafo2Lista.inserirAresta(aresta[0], aresta[1]);
+            }
+
+            Console.WriteLine("MATRIZ:");
+            Console.WriteLine("BFS começando de 0: " + string.Join(", ", grafo2Matriz.buscaLargura(0)));
+            Console.WriteLine("DFS começando de 0: " + string.Join(", ", grafo2Matriz.buscaProfundidade(0)));
+
+            Console.WriteLine("\nLISTA:");
+            Console.WriteLine("BFS começando de 0: " + string.Join(", ", grafo2Lista.buscaLargura(0)));
+            Console.WriteLine("DFS começando de 0: " + string.Join(", ", grafo2Lista.buscaProfundidade(0)));
+
+            // Teste 3: Dijkstra com Grafo Ponderado
+            Console.WriteLine("\n--- Teste 3: Algoritmo de Dijkstra (Grafo Ponderado) ---");
+            Grafos grafo3Matriz = new GrafoMatriz(false, true);
+            Grafos grafo3Lista = new GrafoLista(false, true);
+
+            for (int i = 0; i < 6; i++)
+            {
+                grafo3Matriz.inserirVertice(i.ToString());
+                grafo3Lista.inserirVertice(i.ToString());
+            }
+
+            (int origem, int destino, float peso)[] arestas3 = new[]
+            {
+                (0, 1, 4f),
+                (0, 2, 2f),
+                (1, 2, 1f),
+                (1, 3, 5f),
+                (2, 3, 8f),
+                (2, 4, 10f),
+                (3, 4, 2f),
+                (3, 5, 6f),
+                (4, 5, 3f)
+            };
+
+            foreach (var (orig, dest, p) in arestas3)
+            {
+                grafo3Matriz.inserirAresta(orig, dest, p);
+                grafo3Lista.inserirAresta(orig, dest, p);
+            }
+
+            Console.WriteLine("MATRIZ - Dijkstra a partir de 0:");
+            ImprimirResultadoDijkstra(grafo3Matriz.dijkstra(0));
+
+            Console.WriteLine("\nLISTA - Dijkstra a partir de 0:");
+            ImprimirResultadoDijkstra(grafo3Lista.dijkstra(0));
+
+            // Teste 4: Carregar de arquivo
+            Console.WriteLine("\n--- Teste 4: Carregar Grafo de Arquivo ---");
+            try
+            {
+                Grafos grafoArquivoMatriz = new GrafoMatriz(false, false);
+                if (grafoArquivoMatriz.carregarDoArquivo("grafo_simples.txt"))
+                {
+                    Console.WriteLine("Grafo carregado com sucesso da MATRIZ!");
+                    Console.WriteLine("BFS começando de 0: " + string.Join(", ", grafoArquivoMatriz.buscaLargura(0)));
+                    Console.WriteLine("DFS começando de 0: " + string.Join(", ", grafoArquivoMatriz.buscaProfundidade(0)));
+                }
+                else
+                {
+                    Console.WriteLine("Erro ao carregar grafo na MATRIZ");
+                }
+
+                Grafos grafoArquivoLista = new GrafoLista(false, false);
+                if (grafoArquivoLista.carregarDoArquivo("grafo_simples.txt"))
+                {
+                    Console.WriteLine("\nGrafo carregado com sucesso da LISTA!");
+                    Console.WriteLine("BFS começando de 0: " + string.Join(", ", grafoArquivoLista.buscaLargura(0)));
+                    Console.WriteLine("DFS começando de 0: " + string.Join(", ", grafoArquivoLista.buscaProfundidade(0)));
+                }
+                else
+                {
+                    Console.WriteLine("Erro ao carregar grafo na LISTA");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro ao carregar arquivo: " + ex.Message);
+            }
+        }
+
+        private static void ImprimirResultadoDijkstra(Dictionary<int, (float distancia, List<int> caminho)> resultado)
+        {
+            foreach (var kvp in resultado)
+            {
+                int destino = kvp.Key;
+                float distancia = kvp.Value.distancia;
+                List<int> caminho = kvp.Value.caminho;
+
+                if (distancia == float.MaxValue)
+                {
+                    Console.WriteLine($"Vértice {destino}: INALCANÇÁVEL");
+                }
+                else
+                {
+                    string caminhoStr = string.Join(" -> ", caminho);
+                    Console.WriteLine($"Vértice {destino}: distância = {distancia}, caminho = {caminhoStr}");
+                }
+            }
         }
 
         private static int ExecutarTestes()

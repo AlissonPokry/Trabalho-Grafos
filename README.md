@@ -1,4 +1,6 @@
-# Trabalho M1 - Parte 1
+# Trabalho M1 - Grafos em C#
+
+## Parte 1 - Representações de Grafos
 
 Implementação em C# das duas representações solicitadas:
 
@@ -6,7 +8,7 @@ Implementação em C# das duas representações solicitadas:
 - `GrafoLista`: lista de adjacência com a estrutura auxiliar `Aresta`;
 - `Grafos`: classe base comum, configurada no construtor como direcionada ou não e ponderada ou não.
 
-## Operações implementadas
+### Operações implementadas (Parte 1)
 
 As duas representações implementam os métodos especificados nos slides:
 
@@ -26,9 +28,90 @@ Os índices começam em zero. Métodos `bool` retornam `false` para índices ou 
 
 Peso zero é rejeitado, pois nos slides ele representa ausência de aresta. Pesos negativos são aceitos para não limitar os próximos algoritmos do trabalho.
 
-## Observação sobre a direção das arestas
+### Observação sobre a direção das arestas
 
 A página 76 diz que a ligação de volta deve ser adicionada no grafo direcionado. Isso contradiz a definição apresentada anteriormente e as páginas 69 e 77. A implementação segue a regra correta: a ligação de volta é criada e removida somente em grafos **não direcionados**.
+
+## Parte 2 - Leitura de Arquivos e Algoritmos de Busca
+
+### Leitura de Arquivos
+
+Novo método para carregar grafos de um arquivo de texto:
+
+```csharp
+bool carregarDoArquivo(string caminhoArquivo)
+```
+
+**Formato do arquivo:**
+```
+V A D P
+Ao Ad Ap
+...
+```
+
+Onde:
+- **V**: número de vértices
+- **A**: número de arestas
+- **D**: 0 (não direcionado) ou 1 (direcionado)
+- **P**: 0 (não ponderado) ou 1 (ponderado)
+- **Ao**: vértice de origem da aresta
+- **Ad**: vértice de destino da aresta
+- **Ap**: peso da aresta (opcional, apenas para grafos ponderados)
+
+**Exemplos de arquivos inclusos:**
+- `grafo_simples.txt`: grafo não direcionado e não ponderado
+- `grafo_direcionado.txt`: grafo direcionado e não ponderado
+- `grafo_ponderado.txt`: grafo não direcionado e ponderado
+
+### Algoritmos Implementados
+
+Todos os três algoritmos funcionam tanto na representação de **matriz** quanto na de **lista**, usando o mesmo código na classe base `Grafos`.
+
+#### 1. Busca em Largura (BFS - Breadth-First Search)
+
+```csharp
+List<int> buscaLargura(int origem)
+```
+
+Retorna uma lista com a ordem de visitação dos vértices começando da origem, visitando todos os vértices alcançáveis em ordem de proximidade.
+
+**Características:**
+- Usa fila (Queue) para controlar a ordem de visitação
+- Visita vértices por nível (distância)
+- Tempo: O(V + A), onde V é número de vértices e A é número de arestas
+
+#### 2. Busca em Profundidade (DFS - Depth-First Search)
+
+```csharp
+List<int> buscaProfundidade(int origem)
+```
+
+Retorna uma lista com a ordem de visitação dos vértices começando da origem, visitando todos os vértices alcançáveis em profundidade.
+
+**Características:**
+- Usa recursão e stack implícito
+- Explora o mais profundo possível antes de retroceder
+- Tempo: O(V + A)
+
+#### 3. Algoritmo de Dijkstra
+
+```csharp
+Dictionary<int, (float distancia, List<int> caminho)> dijkstra(int origem)
+```
+
+Calcula a menor distância e o caminho da origem para todos os outros vértices em um grafo ponderado.
+
+**Retorno:**
+- Dicionário onde a chave é o vértice destino
+- Valor é uma tupla com:
+  - `distancia`: distância mínima da origem
+  - `caminho`: lista ordenada de vértices do caminho mais curto
+
+**Características:**
+- Funciona com grafos ponderados (não ponderados tratam todas as arestas com peso 1)
+- Grafo deve ser não direcionado e ponderado conforme criado
+- Tempo: O(V²) na implementação atual
+- Retorna `float.MaxValue` para vértices inalcançáveis
 
 ## Executar
 
@@ -39,4 +122,4 @@ dotnet run
 dotnet run -- --test
 ```
 
-O primeiro comando mostra as duas representações do mesmo grafo. O segundo executa testes de inserção, remoção, reindexação, direção, peso, vizinhos e self-loop.
+O primeiro comando mostra demonstrações dos algoritmos BFS, DFS e Dijkstra com vários tipos de grafos. O segundo executa testes da Parte 1 (inserção, remoção, reindexação, direção, peso, vizinhos e self-loop).

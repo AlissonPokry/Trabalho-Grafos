@@ -1,0 +1,15 @@
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\bin\Debug\net8.0\TrabalhoM1.Grafos.exe
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\bin\Debug\net8.0\TrabalhoM1.Grafos.deps.json
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\bin\Debug\net8.0\TrabalhoM1.Grafos.runtimeconfig.json
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\bin\Debug\net8.0\TrabalhoM1.Grafos.dll
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\bin\Debug\net8.0\TrabalhoM1.Grafos.pdb
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\TrabalhoM1.Grafos.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\TrabalhoM1.Grafos.AssemblyInfoInputs.cache
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\TrabalhoM1.Grafos.AssemblyInfo.cs
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\TrabalhoM1.Grafos.csproj.CoreCompileInputs.cache
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\TrabalhoM1.Grafos.sourcelink.json
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\TrabalhoM1.Grafos.dll
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\refint\TrabalhoM1.Grafos.dll
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\TrabalhoM1.Grafos.pdb
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\TrabalhoM1.Grafos.genruntimeconfig.cache
+C:\Users\Faist\Documents\Aula\Trabalho-Grafos\obj\Debug\net8.0\ref\TrabalhoM1.Grafos.dll
