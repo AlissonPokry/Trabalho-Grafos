@@ -58,10 +58,30 @@ Onde:
 - **Ad**: vértice de destino da aresta
 - **Ap**: peso da aresta (opcional, apenas para grafos ponderados)
 
+O tipo do grafo vem do **próprio cabeçalho do arquivo**: `carregarDoArquivo` lê `D` e `P` e
+reconfigura o grafo (descartando o conteúdo anterior), então não é preciso saber de antemão se
+o arquivo é direcionado ou ponderado — qualquer arquivo válido abre em qualquer instância.
+O método retorna `false` apenas quando o arquivo não existe ou o cabeçalho não está no formato.
+
+A leitura tolera espaços repetidos, tabulações e linhas em branco, e aceita arquivos com
+quebra de linha do Windows (CRLF).
+
 **Exemplos de arquivos inclusos:**
 - `grafo_simples.txt`: grafo não direcionado e não ponderado
 - `grafo_direcionado.txt`: grafo direcionado e não ponderado
 - `grafo_ponderado.txt`: grafo não direcionado e ponderado
+- `grafos/`: arquivos dos slides e o `espacoaereo.txt` (333 vértices, ponderado)
+
+### Menu interativo
+
+Rodar sem argumentos (`dotnet run`) abre um menu que lista automaticamente os arquivos `.txt`
+da pasta do projeto e da subpasta `grafos/`, mostrando o tipo de cada um. Depois de escolher o
+arquivo, o grafo é carregado **nas duas representações** e ambas são impressas (matriz de
+adjacência e lista de adjacência); em seguida é possível rodar BFS, DFS e Dijkstra sobre ele.
+Grafos com mais de 30 vértices pedem confirmação antes de imprimir a matriz.
+
+Outros modos: `dotnet run -- --demo` (demonstração fixa antiga), `dotnet run -- --test`
+(testes da Parte 1) e `dotnet run -- --teste-parte2` (testes da Parte 2).
 
 ### Algoritmos Implementados
 

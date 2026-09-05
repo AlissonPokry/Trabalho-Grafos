@@ -127,6 +127,11 @@ namespace TrabalhoM1.Grafos
             adjacencias.Add(new List<Aresta>());
         }
 
+        protected override void AoLimpar()
+        {
+            adjacencias.Clear();
+        }
+
         protected override void AoRemoverVertice(int indice)
         {
             adjacencias.RemoveAt(indice);

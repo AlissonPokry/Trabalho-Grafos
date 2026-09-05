@@ -119,6 +119,11 @@ namespace TrabalhoM1.Grafos
             matriz = matrizNova;
         }
 
+        protected override void AoLimpar()
+        {
+            matriz = new float?[0, 0];
+        }
+
         protected override void AoRemoverVertice(int indice)
         {
             int tamanhoNovo = QuantidadeVertices - 1;

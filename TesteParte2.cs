@@ -69,17 +69,59 @@ namespace TrabalhoM1.Grafos
             sucesso = grafo.carregarDoArquivo("grafo_ponderado.txt");
             Validar(sucesso && grafo.QuantidadeVertices == 6, "✓ Carregamento bem-sucedido");
 
-            Console.WriteLine("Teste 1.4: Validar tipo de grafo incompatível");
-            grafo = new GrafoMatriz(false, false); // Não-direcionado, não-ponderado
+            Console.WriteLine("Teste 1.4: Grafo assume o tipo declarado no arquivo");
+            grafo = new GrafoMatriz(false, false); // Criado como não-direcionado e não-ponderado
             sucesso = grafo.carregarDoArquivo("grafo_ponderado.txt"); // Arquivo é ponderado
-            Validar(!sucesso, "✓ Rejeição de tipo incompatível");
+            Validar(sucesso && grafo.Ponderado && !grafo.Direcionado,
+                "✓ Tipo do arquivo adotado (ponderado, não-direcionado)");
+
+            Console.WriteLine("Teste 1.4b: Arquivo direcionado em objeto criado não-direcionado");
+            grafo = new GrafoMatriz(false, false);
+            sucesso = grafo.carregarDoArquivo("grafo_direcionado.txt");
+            Validar(sucesso && grafo.Direcionado && grafo.existeAresta(0, 1) && !grafo.existeAresta(1, 0),
+                "✓ Arestas criadas em um único sentido");
+
+            Console.WriteLine("Teste 1.4c: Cabeçalho inválido continua sendo rejeitado");
+            grafo = new GrafoMatriz(false, false);
+            sucesso = grafo.carregarDoArquivo("README.md");
+            Validar(!sucesso && grafo.QuantidadeVertices == 0, "✓ Arquivo fora do formato rejeitado");
+
+            Console.WriteLine("Teste 1.4d: Arquivo inexistente");
+            grafo = new GrafoMatriz(false, false);
+            sucesso = grafo.carregarDoArquivo("nao_existe_123.txt");
+            Validar(!sucesso, "✓ Arquivo inexistente rejeitado");
+
+            Console.WriteLine("Teste 1.4e: Carregar dois arquivos no mesmo objeto");
+            grafo = new GrafoMatriz(false, false);
+            grafo.carregarDoArquivo("grafo_ponderado.txt");  // 6 vértices
+            sucesso = grafo.carregarDoArquivo("grafo_simples.txt"); // 5 vértices
+            Validar(sucesso && grafo.QuantidadeVertices == 5 && !grafo.Ponderado,
+                $"✓ Estado anterior descartado ({grafo.QuantidadeVertices} vértices)");
 
             Console.WriteLine("Teste 1.5: Testar com GrafoLista");
             grafo = new GrafoLista(false, false);
             sucesso = grafo.carregarDoArquivo("grafo_simples.txt");
             Validar(sucesso && grafo.QuantidadeVertices == 5, "✓ Carregamento em lista bem-sucedido");
 
-            Console.WriteLine("Teste 1.6: Validar arestas após carregamento");
+            Console.WriteLine("Teste 1.6: Pesos lidos corretamente");
+            grafo = new GrafoLista(false, false);
+            grafo.carregarDoArquivo("grafo_ponderado.txt");
+            Validar(grafo.pesoAresta(0, 1) == 4f && grafo.pesoAresta(0, 2) == 2f && grafo.pesoAresta(1, 0) == 4f,
+                $"✓ Pesos preservados: 0-1={grafo.pesoAresta(0, 1)}, 0-2={grafo.pesoAresta(0, 2)}");
+
+            Console.WriteLine("Teste 1.7: Arquivo da pasta grafos (CRLF)");
+            grafo = new GrafoMatriz(false, false);
+            sucesso = grafo.carregarDoArquivo(System.IO.Path.Combine("grafos", "slides.txt"));
+            Validar(sucesso && grafo.QuantidadeVertices == 5 && grafo.Ponderado,
+                $"✓ slides.txt carregado ({grafo.QuantidadeVertices} vértices)");
+
+            Console.WriteLine("Teste 1.8: Arquivo grande (espacoaereo.txt)");
+            grafo = new GrafoLista(false, false);
+            sucesso = grafo.carregarDoArquivo(System.IO.Path.Combine("grafos", "espacoaereo.txt"));
+            Validar(sucesso && grafo.QuantidadeVertices == 333 && grafo.Ponderado,
+                $"✓ espacoaereo.txt carregado ({grafo.QuantidadeVertices} vértices)");
+
+            Console.WriteLine("Teste 1.9: Validar arestas após carregamento");
             grafo = new GrafoMatriz(false, false);
             grafo.carregarDoArquivo("grafo_simples.txt");
             bool existeAresta01 = grafo.existeAresta(0, 1);

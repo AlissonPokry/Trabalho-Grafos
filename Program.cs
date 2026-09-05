@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace TrabalhoM1.Grafos
 {
@@ -18,11 +19,299 @@ namespace TrabalhoM1.Grafos
                     TesteParte2.ExecutarTodosTestes();
                     return 0;
                 }
+                else if (args[0] == "--demo")
+                {
+                    DemonstraracaoBuscas();
+                    return 0;
+                }
             }
 
-            DemonstraracaoBuscas();
-            
+            MenuPrincipal();
+
             return 0;
+        }
+
+        // ------------------------------------------------------------------
+        // Menu interativo: escolhe um arquivo .txt, carrega nas duas
+        // representações e permite rodar os algoritmos sobre ele.
+        // ------------------------------------------------------------------
+
+        private const int LimiteImpressaoAutomatica = 30;
+
+        private static void MenuPrincipal()
+        {
+            Console.WriteLine("=== TRABALHO M1 - GRAFOS ===\n");
+
+            while (true)
+            {
+                List<string> arquivos = LocalizarArquivos();
+
+                if (arquivos.Count == 0)
+                {
+                    Console.WriteLine("Nenhum arquivo .txt encontrado em " + Directory.GetCurrentDirectory());
+                    Console.WriteLine("Coloque os arquivos de grafo na pasta do projeto e rode novamente.");
+                    return;
+                }
+
+                Console.WriteLine("Arquivos encontrados:");
+                for (int i = 0; i < arquivos.Count; i++)
+                {
+                    Console.WriteLine(string.Format("{0,3}) {1,-28} {2}",
+                        i + 1,
+                        CaminhoRelativo(arquivos[i]),
+                        DescreverArquivo(arquivos[i])));
+                }
+
+                Console.WriteLine("  0) sair");
+
+                int escolha = LerInteiro("\nArquivo: ", 0, arquivos.Count);
+                if (escolha <= 0)
+                {
+                    Console.WriteLine("Até mais.");
+                    return;
+                }
+
+                string caminho = arquivos[escolha - 1];
+
+                Grafos matriz = new GrafoMatriz(false, false);
+                Grafos lista = new GrafoLista(false, false);
+
+                if (!matriz.carregarDoArquivo(caminho) || !lista.carregarDoArquivo(caminho))
+                {
+                    Console.WriteLine("\nNão foi possível carregar \"" + CaminhoRelativo(caminho) +
+                                      "\". Verifique se a primeira linha está no formato: V A D P\n");
+                    continue;
+                }
+
+                Console.WriteLine("\nGrafo carregado: " + CaminhoRelativo(caminho));
+                ImprimirResumo(matriz);
+                ImprimirRepresentacoes(matriz, lista);
+
+                MenuGrafo(matriz, lista, caminho);
+            }
+        }
+
+        private static void MenuGrafo(Grafos matriz, Grafos lista, string caminho)
+        {
+            while (true)
+            {
+                Console.WriteLine("\n--- " + CaminhoRelativo(caminho) + " ---");
+                Console.WriteLine("1) Imprimir grafo (matriz e lista)");
+                Console.WriteLine("2) Busca em largura (BFS)");
+                Console.WriteLine("3) Busca em profundidade (DFS)");
+                Console.WriteLine("4) Dijkstra");
+                Console.WriteLine("5) Escolher outro arquivo");
+                Console.WriteLine("0) Sair");
+
+                int opcao = LerInteiro("Opção: ", 0, 5);
+
+                switch (opcao)
+                {
+                    case 1:
+                        ImprimirRepresentacoes(matriz, lista);
+                        break;
+
+                    case 2:
+                    case 3:
+                        int origemBusca = LerInteiro(
+                            "Vértice de origem (0 a " + (matriz.QuantidadeVertices - 1) + "): ",
+                            0, matriz.QuantidadeVertices - 1);
+                        if (opcao == 2)
+                        {
+                            Console.WriteLine("MATRIZ - BFS: " + string.Join(", ", matriz.buscaLargura(origemBusca)));
+                            Console.WriteLine("LISTA  - BFS: " + string.Join(", ", lista.buscaLargura(origemBusca)));
+                        }
+                        else
+                        {
+                            Console.WriteLine("MATRIZ - DFS: " + string.Join(", ", matriz.buscaProfundidade(origemBusca)));
+                            Console.WriteLine("LISTA  - DFS: " + string.Join(", ", lista.buscaProfundidade(origemBusca)));
+                        }
+                        break;
+
+                    case 4:
+                        if (!matriz.Ponderado)
+                        {
+                            Console.WriteLine("Dijkstra exige um grafo ponderado; este arquivo não é ponderado.");
+                            break;
+                        }
+
+                        int origemDijkstra = LerInteiro(
+                            "Vértice de origem (0 a " + (matriz.QuantidadeVertices - 1) + "): ",
+                            0, matriz.QuantidadeVertices - 1);
+                        Console.WriteLine("\nMATRIZ - Dijkstra a partir de " + origemDijkstra + ":");
+                        ImprimirResultadoDijkstra(matriz.dijkstra(origemDijkstra));
+                        Console.WriteLine("\nLISTA - Dijkstra a partir de " + origemDijkstra + ":");
+                        ImprimirResultadoDijkstra(lista.dijkstra(origemDijkstra));
+                        break;
+
+                    case 5:
+                        Console.WriteLine();
+                        return;
+
+                    default:
+                        Console.WriteLine("Até mais.");
+                        Environment.Exit(0);
+                        return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Procura arquivos .txt no diretório atual e na subpasta "grafos".
+        /// Se nada for encontrado, tenta a pasta do executável.
+        /// </summary>
+        private static List<string> LocalizarArquivos()
+        {
+            List<string> encontrados = ProcurarEm(Directory.GetCurrentDirectory());
+
+            if (encontrados.Count == 0)
+            {
+                encontrados = ProcurarEm(AppContext.BaseDirectory);
+            }
+
+            return encontrados;
+        }
+
+        private static List<string> ProcurarEm(string raiz)
+        {
+            List<string> encontrados = new List<string>();
+
+            try
+            {
+                if (!Directory.Exists(raiz))
+                {
+                    return encontrados;
+                }
+
+                string[] naRaiz = Directory.GetFiles(raiz, "*.txt");
+                Array.Sort(naRaiz, StringComparer.OrdinalIgnoreCase);
+                encontrados.AddRange(naRaiz);
+
+                string subpasta = Path.Combine(raiz, "grafos");
+                if (Directory.Exists(subpasta))
+                {
+                    string[] naSubpasta = Directory.GetFiles(subpasta, "*.txt");
+                    Array.Sort(naSubpasta, StringComparer.OrdinalIgnoreCase);
+                    encontrados.AddRange(naSubpasta);
+                }
+            }
+            catch (Exception)
+            {
+                // diretório inacessível: segue com o que já foi encontrado
+            }
+
+            return encontrados;
+        }
+
+        /// <summary>
+        /// Lê a primeira linha do arquivo e descreve o grafo (V, A e tipo).
+        /// </summary>
+        private static string DescreverArquivo(string caminho)
+        {
+            try
+            {
+                using (StreamReader leitor = new StreamReader(caminho))
+                {
+                    string primeira = leitor.ReadLine();
+                    if (primeira == null)
+                    {
+                        return "(arquivo vazio)";
+                    }
+
+                    string[] campos = primeira.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (campos.Length < 4 ||
+                        !int.TryParse(campos[0], out int v) ||
+                        !int.TryParse(campos[1], out int a) ||
+                        !int.TryParse(campos[2], out int d) ||
+                        !int.TryParse(campos[3], out int p))
+                    {
+                        return "(formato não reconhecido)";
+                    }
+
+                    return string.Format("{0,4} vértices, {1,5} arestas  [{2}]", v, a, DescreverTipo(d == 1, p == 1));
+                }
+            }
+            catch (Exception)
+            {
+                return "(não foi possível ler)";
+            }
+        }
+
+        private static string DescreverTipo(bool direcionado, bool ponderado)
+        {
+            if (direcionado && ponderado) return "direcionado e ponderado";
+            if (direcionado) return "direcionado";
+            if (ponderado) return "ponderado";
+            return "simples";
+        }
+
+        private static string CaminhoRelativo(string caminho)
+        {
+            try
+            {
+                return Path.GetRelativePath(Directory.GetCurrentDirectory(), caminho);
+            }
+            catch (Exception)
+            {
+                return caminho;
+            }
+        }
+
+        private static void ImprimirResumo(Grafos grafo)
+        {
+            Console.WriteLine("Vértices: " + grafo.QuantidadeVertices +
+                              " | Tipo: " + DescreverTipo(grafo.Direcionado, grafo.Ponderado));
+        }
+
+        /// <summary>
+        /// Imprime a matriz de adjacência e a lista de adjacência. Grafos grandes
+        /// só são impressos após confirmação, para não inundar a tela.
+        /// </summary>
+        private static void ImprimirRepresentacoes(Grafos matriz, Grafos lista)
+        {
+            if (matriz.QuantidadeVertices > LimiteImpressaoAutomatica)
+            {
+                Console.Write("O grafo tem " + matriz.QuantidadeVertices +
+                              " vértices e a matriz vai ocupar muitas linhas. Imprimir mesmo assim? (s/N): ");
+                string resposta = Console.ReadLine();
+                if (resposta == null || !resposta.Trim().StartsWith("s", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Impressão do grafo ignorada.");
+                    return;
+                }
+            }
+
+            Console.WriteLine("\nMATRIZ DE ADJACÊNCIA:");
+            matriz.imprimeGrafo();
+
+            Console.WriteLine("\nLISTA DE ADJACÊNCIA:");
+            lista.imprimeGrafo();
+        }
+
+        /// <summary>
+        /// Lê um inteiro entre minimo e maximo, repetindo a pergunta em caso de
+        /// entrada inválida. Devolve o mínimo se a entrada terminar (Ctrl+D).
+        /// </summary>
+        private static int LerInteiro(string pergunta, int minimo, int maximo)
+        {
+            while (true)
+            {
+                Console.Write(pergunta);
+                string entrada = Console.ReadLine();
+
+                if (entrada == null)
+                {
+                    Console.WriteLine();
+                    return minimo;
+                }
+
+                if (int.TryParse(entrada.Trim(), out int valor) && valor >= minimo && valor <= maximo)
+                {
+                    return valor;
+                }
+
+                Console.WriteLine("Entrada inválida. Informe um número entre " + minimo + " e " + maximo + ".");
+            }
         }
 
         private static void DemonstraracaoBuscas()

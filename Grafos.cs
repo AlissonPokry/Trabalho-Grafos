@@ -71,8 +71,19 @@ namespace TrabalhoM1.Grafos
         public abstract List<int> retornarVizinhos(int vertice);
 
         /// <summary>
+        /// Remove todos os vertices e arestas, deixando o grafo vazio.
+        /// </summary>
+        public void limpar()
+        {
+            vertices.Clear();
+            AoLimpar();
+        }
+
+        /// <summary>
         /// Carrega um grafo a partir de um arquivo de texto.
-        /// Formato: V A D P seguido de A linhas com arestas
+        /// Formato: V A D P seguido de A linhas com arestas.
+        /// O tipo do grafo (direcionado e ponderado) vem do proprio cabecalho do
+        /// arquivo, e o conteudo anterior do grafo e descartado.
         /// </summary>
         public bool carregarDoArquivo(string caminhoArquivo)
         {
@@ -82,7 +93,7 @@ namespace TrabalhoM1.Grafos
                 if (linhas.Length == 0)
                     return false;
 
-                var primeiraLinha = linhas[0].Split(' ');
+                var primeiraLinha = SepararCampos(linhas[0]);
                 if (primeiraLinha.Length < 4)
                     return false;
 
@@ -92,9 +103,13 @@ namespace TrabalhoM1.Grafos
                     !int.TryParse(primeiraLinha[3], out int p))
                     return false;
 
-                // Validar se é ponderado/direcionado conforme declarado
-                if ((d == 1) != Direcionado || (p == 1) != Ponderado)
+                if (v < 0 || a < 0)
                     return false;
+
+                // O grafo assume o tipo declarado no arquivo.
+                limpar();
+                Direcionado = d == 1;
+                Ponderado = p == 1;
 
                 // Inserir vértices
                 for (int i = 0; i < v; i++)
@@ -102,10 +117,16 @@ namespace TrabalhoM1.Grafos
                     inserirVertice(i.ToString());
                 }
 
-                // Inserir arestas
-                for (int i = 1; i <= a && i < linhas.Length; i++)
+                // Inserir arestas: linhas em branco são ignoradas sem consumir uma aresta.
+                int arestasLidas = 0;
+                for (int i = 1; i < linhas.Length && arestasLidas < a; i++)
                 {
-                    var partes = linhas[i].Split(' ');
+                    var partes = SepararCampos(linhas[i]);
+                    if (partes.Length == 0)
+                        continue;
+
+                    arestasLidas++;
+
                     if (partes.Length < 2)
                         continue;
 
@@ -129,6 +150,15 @@ namespace TrabalhoM1.Grafos
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Quebra a linha em campos, tolerando espaços repetidos, tabulações e
+        /// espaços no fim da linha.
+        /// </summary>
+        private static string[] SepararCampos(string linha)
+        {
+            return linha.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         /// <summary>
@@ -292,6 +322,8 @@ namespace TrabalhoM1.Grafos
         }
 
         protected abstract void AoInserirVertice();
+
+        protected abstract void AoLimpar();
 
         protected abstract void AoRemoverVertice(int indice);
     }
