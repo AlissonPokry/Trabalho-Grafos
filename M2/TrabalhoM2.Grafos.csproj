@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- A base da M1 foi escrita sem análise de nulidade. Os novos fontes a habilitam localmente. -->
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include=".src/*.cs" />
+    <Compile Include="../Grafos.cs" Link="Base/Grafos.cs" />
+    <Compile Include="../GrafoLista.cs" Link="Base/GrafoLista.cs" />
+    <Compile Include="../GrafoMatriz.cs" Link="Base/GrafoMatriz.cs" />
+    <Content Include="grafos/*.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

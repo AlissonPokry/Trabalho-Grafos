@@ -510,7 +510,9 @@ namespace TrabalhoM1.Grafos
             Exigir(grafo.existeAresta(1, 0), "não direcionado deve criar retorno");
             Exigir(grafo.pesoAresta(1, 0) == -2.5f, "deve preservar o peso");
             Exigir(!grafo.inserirAresta(0, 1, 8f), "não deve duplicar aresta");
-            Exigir(!grafo.inserirAresta(0, 2, 0f), "peso zero deve ser inválido");
+            Exigir(grafo.inserirAresta(0, 2, 0f), "ponderado deve aceitar peso zero");
+            Exigir(grafo.existeAresta(0, 2) && grafo.pesoAresta(0, 2) == 0f, "aresta de peso zero deve existir");
+            Exigir(grafo.removerAresta(0, 2), "deve remover aresta de peso zero");
             Exigir(SequenciaIgual(grafo.retornarVizinhos(1), 0, 2), "vizinhos incorretos");
             Exigir(grafo.removerVertice(1), "deve remover vértice");
             Exigir(grafo.QuantidadeVertices == 2, "quantidade após remoção incorreta");
@@ -526,6 +528,9 @@ namespace TrabalhoM1.Grafos
             grafo.inserirVertice("B");
             Exigir(grafo.inserirAresta(0, 1, 99f), "deve inserir arco");
             Exigir(grafo.pesoAresta(0, 1) == 1f, "não ponderado deve usar peso um");
+            Exigir(grafo.inserirAresta(1, 0, 0f) && grafo.pesoAresta(1, 0) == 1f,
+                "não ponderado não deve armazenar peso zero");
+            Exigir(grafo.removerAresta(1, 0), "deve remover arco de retorno do teste");
             Exigir(!grafo.existeAresta(1, 0), "direcionado não deve criar retorno");
             Exigir(grafo.removerAresta(0, 1), "deve remover arco");
             Exigir(!grafo.removerAresta(0, 1), "não deve remover arco inexistente");

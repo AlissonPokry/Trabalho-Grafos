@@ -313,7 +313,7 @@ namespace TrabalhoM1.Grafos
         protected bool TentarNormalizarPeso(float pesoInformado, out float peso)
         {
             peso = Ponderado ? pesoInformado : 1f;
-            return !float.IsNaN(peso) && !float.IsInfinity(peso) && peso != 0f;
+            return !float.IsNaN(peso) && !float.IsInfinity(peso);
         }
 
         protected string CabecalhoVertice(int indice)

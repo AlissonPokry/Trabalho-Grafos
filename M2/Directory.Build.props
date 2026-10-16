@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Pastas ocultas são ignoradas pela inclusão automática de fontes da M1. -->
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory).build/obj/</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(MSBuildThisFileDirectory).build/bin/</BaseOutputPath>
+  </PropertyGroup>
+</Project>

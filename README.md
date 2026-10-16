@@ -26,7 +26,7 @@ List<int> retornarVizinhos(int vertice)
 
 Os índices começam em zero. Métodos `bool` retornam `false` para índices ou dados inválidos e para inserções duplicadas. `labelVertice` retorna `null` para um índice inválido; `pesoAresta` retorna `0` quando a aresta não existe. Em grafos não ponderados, toda aresta recebe peso `1`.
 
-Peso zero é rejeitado, pois nos slides ele representa ausência de aresta. Pesos negativos são aceitos para não limitar os próximos algoritmos do trabalho.
+Grafos ponderados aceitam pesos zero e negativos. Use `existeAresta` para distinguir uma aresta de peso zero de uma aresta inexistente. Em grafos não ponderados, o peso permanece `1`.
 
 ### Observação sobre a direção das arestas
 
@@ -143,3 +143,40 @@ dotnet run -- --test
 ```
 
 O primeiro comando mostra demonstrações dos algoritmos BFS, DFS e Dijkstra com vários tipos de grafos. O segundo executa testes da Parte 1 (inserção, remoção, reindexação, direção, peso, vizinhos e self-loop).
+
+# Trabalho M2 - Coloração e Árvore Geradora Mínima
+
+As instruções anteriores de execução na pasta principal são referentes à M1. **Para executar o que é pertinente à M2, entre na pasta `M2` antes de rodar os comandos.** A partir da pasta `Trabalho Grafos`:
+
+```powershell
+cd M2
+dotnet run
+```
+
+O menu da M2 permite escolher o arquivo de entrada, a representação (lista ou matriz) e executar:
+
+- Coloração: gulosa sem ordenação, Welsh-Powell, DSATUR e força bruta.
+- Árvore geradora mínima: Prim e Kruskal.
+- Comparação das três heurísticas de coloração ou dos dois algoritmos de AGM.
+
+Na coloração, são exibidos o tempo de execução e o número de cores; para grafos com menos de 10 vértices, também são exibidas as cores de cada vértice. Na AGM, são exibidos o tempo, as arestas selecionadas e a soma dos pesos. Grafos desconectados produzem uma floresta geradora mínima.
+
+### Testes da M1 e da M2
+
+Para executar os testes da M2, **permaneça dentro da pasta `M2`**:
+
+```powershell
+dotnet run -- --test
+```
+
+A suíte inclui casos de AGM com peso zero, além dos testes de coloração, grafos desconectados, lista e matriz e um grafo com 5.000 vértices. A força bruta é testada apenas em grafos pequenos por seu custo exponencial.
+
+Para testar a M1, volte à pasta principal `Trabalho Grafos`:
+
+```powershell
+cd ..
+dotnet run -- --test
+dotnet run -- --teste-completo
+```
+
+Mantenha a pasta `M2` junto dos arquivos da M1: o projeto da M2 reutiliza `Grafos.cs`, `GrafoLista.cs` e `GrafoMatriz.cs` da pasta principal.
